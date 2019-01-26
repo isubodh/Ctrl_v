@@ -24,21 +24,26 @@ class CtrlV:
 		self.frmCtrlv.grid(column=0, row=0)
 		self.frmBtn = tk.Frame(win)
 		self.frmBtn.grid(column=1, row=1)
-		''' Button '''
+		
+		## Button for Ctrl+V
 		self.btnCtrlV = ttk.Button(self.frmBtn, text="Paste",command=self.paste)
 		self.btnCtrlV.grid(column=0, row=0)
-		self.btnCtrlV.bind('<Double-3>', quit) 
+		
+		##Button for restoring back value
 		self.btnRestore = ttk.Button(self.frmBtn, text="X",command=self.restore)
 		self.btnRestore.grid(column=1, row=0)
 		
-		self.data = ''
+		#Popup menu
+		self.rclick = RightClick(self.win)
+		self.btnCtrlV.bind('<Button-3>', self.rclick.popup)
+		
+		
+		data = ''
 		self.myKeyWord = 'Subodh+77\n'
 
-	'''
-	Function to work with clipboard
-	'''
+	## Add the keyword ready to paste
 	def paste(self):
-		#with 
+		global myKeyWord
 		cb.OpenClipboard()
 		current = cb.GetClipboardData(cb.CF_TEXT)
 		if current != self.myKeyWord :
@@ -47,10 +52,9 @@ class CtrlV:
 		cb.SetClipboardText(self.myKeyWord)
 		cb.CloseClipboard()
 	
-	'''
-	To restore the last value
-	'''
+	## We are restoring back to what it was
 	def restore(self):
+		global myKeyWord		
 		cb.OpenClipboard()
 		current = cb.GetClipboardData()
 		if current == self.myKeyWord :
@@ -67,11 +71,30 @@ class CtrlV:
 		print("Exiting...")
 		exit()
 
+class RightClick:
+    def __init__(self, win):
+
+        # create a popup menu
+        self.aMenu = tk.Menu(win, tearoff=0)
+        self.aMenu.add_command(label='Exit', command=self.quit)
+        self.aMenu.add_command(label='About', command=self.about)
+
+        self.tree_item = ''
+
+    def quit(self):
+        exit()
+
+    def about(self):
+        print ('This is for ease of typing!')
+
+    def popup(self, event):
+        self.aMenu.post(event.x_root, event.y_root)
+        self.btnCtrlV = app.btnCtrlV.focus()
 '''
 ## Main 
 '''
 win = tk.Tk()
-CtrlV(win)
+app=CtrlV(win)
 win.call('wm', 'attributes', '.', '-topmost', True)
 win.mainloop()
 
