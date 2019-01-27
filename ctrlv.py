@@ -8,10 +8,10 @@ class CtrlV:
 	def __init__(self, win):
 		self.win = win
 		win.title("Ctrl+V")
-		## User should not rezie the app
+		## User should not rezie the app it just few buttons
 		win.resizable(False, False)
 		## Don't want to see any control buttons
-		win.overrideredirect(True)
+		#win.overrideredirect(True)
 		
 		## Loc need to be set manually as we disabled control
 		width = int(win.winfo_screenwidth()/10)
@@ -19,23 +19,27 @@ class CtrlV:
 		xcorr = int(win.winfo_screenwidth() *0.9 )
 		ycorr = int(win.winfo_screenheight() * 0.9 )
 		win.geometry("{0}x{1}+{2}+{3}".format(width, height, xcorr, ycorr))
+	
+		#Popup menu
+		self.rclick = RightClick(self.win)
 		
 		self.frmCtrlv = tk.Frame(win)
 		self.frmCtrlv.grid(column=0, row=0)
+		self.frmCtrlv.bind('<Button-3>', self.rclick.popup)
+		
 		self.frmBtn = tk.Frame(win)
 		self.frmBtn.grid(column=1, row=1)
+		self.frmBtn.bind('<Button-3>', self.rclick.popup)
 		
 		## Button for Ctrl+V
 		self.btnCtrlV = ttk.Button(self.frmBtn, text="Paste",command=self.paste)
 		self.btnCtrlV.grid(column=0, row=0)
+		self.btnCtrlV.bind('<Button-3>', self.rclick.popup)
 		
 		##Button for restoring back value
 		self.btnRestore = ttk.Button(self.frmBtn, text="X",command=self.restore)
 		self.btnRestore.grid(column=1, row=0)
-		
-		#Popup menu
-		self.rclick = RightClick(self.win)
-		self.btnCtrlV.bind('<Button-3>', self.rclick.popup)
+		self.btnRestore.bind('<Button-3>', self.rclick.popup)
 		
 		
 		data = ''
@@ -61,14 +65,9 @@ class CtrlV:
 			cb.EmptyClipboard()
 			cb.SetClipboardText(self.data)
 		cb.CloseClipboard()			
-			
-			
-			
-	'''
-	Exit app
-	'''
+				
+	## Eventualy ...
 	def quit(self):
-		print("Exiting...")
 		exit()
 
 class RightClick:
@@ -90,11 +89,11 @@ class RightClick:
     def popup(self, event):
         self.aMenu.post(event.x_root, event.y_root)
         self.btnCtrlV = app.btnCtrlV.focus()
-'''
-## Main 
-'''
-win = tk.Tk()
-app=CtrlV(win)
-win.call('wm', 'attributes', '.', '-topmost', True)
-win.mainloop()
+
+if __name__ == '__main__':
+	win = tk.Tk()
+	app=CtrlV(win)
+	## Should always on top
+	win.call('wm', 'attributes', '.', '-topmost', True)
+	win.mainloop()
 
